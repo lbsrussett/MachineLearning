@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Project4Application {
-	private static int dimensions = 22; //How many inputs are passed in
+	private static int dimensions = 21; //How many inputs are passed in
 	private static int inputVectors = 7195; //How many arrays of inputs are tested
 	private static int possibleClassifications = 60; //If the problem is multiClass, the number of classifcations
 	private static String filename = "Frogs_MFCCs.csv";
@@ -15,6 +15,8 @@ public class Project4Application {
 	
 	public static void main(String[] args) {
 		inputs = loadInputs(); 
+		DBScan db = new DBScan(inputs);
+		db.updateClusters();
 	}
 	
 	private static double[][] loadInputs() {
@@ -30,7 +32,7 @@ public class Project4Application {
 	while(scanner.hasNext()){
 		double[] fileInput = new double[dimensions+1];
 			String[] input = scanner.next().split(",");
-			for(int i = 0; i < input.length; i++) {
+			for(int i = 0; i < input.length-1; i++) {
 				fileInput[i] = Double.parseDouble(input[i]);
 			}
 		inputsList.add(fileInput);
