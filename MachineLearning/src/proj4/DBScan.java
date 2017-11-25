@@ -2,42 +2,69 @@ package proj4;
 
 import java.util.ArrayList;
 
-public class DBScan {
-	private Point[] points = null;
+public class DBScan extends ClusteringAlgorithm {
+	private Point[] allPoints = null;
 	private int clusterNum = 0;
-	private ArrayList<Point[]> clusters = new ArrayList<Point[]>();
+	private ArrayList<Cluster> clusters = new ArrayList<Cluster>();
 	private final double EPSILON = 0.5;
 	private final int MINPOINTS = 2;
 	
 	public DBScan(double[][] inputs) {
-		points = new Point[inputs.length];
+		allPoints = new Point[inputs.length];
 		for(int i = 0; i < inputs.length; i++) {
-			this.points[i] = new Point(inputs[i]);
+			this.allPoints[i] = new Point(inputs[i]);
+		}
+	}
+	public void initCores() {
+		for(int i = 0; i < allPoints.length; i++) {
+			Point point1 = allPoints[i];
+			int neighbors = 0;
+			for(int j = i+1; j < allPoints.length; j++) {
+				Point point2 = allPoints[j];
+				if(withinEpsilon(point1, point2)) {
+					neighbors++;
+				}
+				if(neighbors >= MINPOINTS) {
+					point1.isCorePoint();
+				}
+			}
 		}
 	}
 	public void updateClusters() {
-		for(int i = 0; i < points.length; i++) {
-			if(points[i].unclassified()) {
-				calcDistance(points[i]);
+		for(int i = 0; i < allPoints.length; i++) {
+			if(allPoints[i].getCorePoint()) {
+				calcDistance(allPoints[i]);
 			}
-			
 		}
-		for(int j = 0; j < clusters.size(); j++) {
-			System.out.println(clusters.get(j));
+		for(int i = 0; i < allPoints.length; i++) {
+			if(allPoints[i].unclassified()) {
+				
+			}
 		}
 	}
+	private boolean isBorder(Point p) {
+		for(int i = 0; i < allPoints.length; i ++) {
+			if(allPoints[i] != p){
+				double distance = euclideanDistance(p.getValues(), allPoints[i].getValues());
+			}
+		}
+		return false;
+	}
 	public void calcDistance(Point p) {
-			clusterNum++;
 			Point point1 = p;
-			p.isCorePoint();
-			p.updateCluster(clusterNum);
-			for(int i = 0; i < points.length; i++) {
-				if(points[i] != p) {
-					double distance = euclideanDistance(point1.getValues(), points[i].getValues());
+			point1.isCorePoint();
+			clusterNum++;
+			Cluster c = new Cluster(MINPOINTS, clusterNum);
+			clusters.add(c);
+			c.addPoint(point1);
+			point1.updateCluster(c.getClusterID(c));
+			for(int i = 0; i < allPoints.length; i++) {
+				if(allPoints[i] != p) {
+					double distance = euclideanDistance(point1.getValues(), allPoints[i].getValues());
 					//System.out.println(distance);
 					if(distance < EPSILON) {
-						points[i].updateCluster(p.getCluster());
-						p.addNeighbor(points[i]);
+						c.addPoint(allPoints[i]);
+						allPoints[i].updateCluster(c.getClusterID(c));
 					}
 				}
 			}
@@ -52,7 +79,14 @@ public class DBScan {
 		distance = Math.sqrt(distance);
 		return distance;
 	}
+	private boolean withinEpsilon(Point p1, Point p2) {
+		double distance = euclideanDistance(p1.getValues(), p2.getValues());
+		if(distance < EPSILON) {
+			return true;
+		}
+		return false;
+	}
 	public Point[] returnPoints() {
-		return points;
+		return allPoints;
 	}
 }

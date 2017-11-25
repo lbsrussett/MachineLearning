@@ -1,5 +1,8 @@
 package proj4;
 
-public class ACO {
+public class ACO extends ClusteringAlgorithm {
 
+	public void updateClusters() {
+		
+	}
 }
