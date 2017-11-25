@@ -6,6 +6,7 @@ public class Point {
 	private int cluster;
 	private boolean noise, corePoint, unclassified = true;
 	private double[] values;
+	private ArrayList<Point> neighbors = new ArrayList<Point>();
 	
 	public Point(double[] values) {
 		this.values = values;
@@ -18,13 +19,14 @@ public class Point {
 		unclassified = false;
 		updateNoise(false);
 	}
-	public void updateNoise(boolean b) {
-		this.noise = b;
+	public void updateNoise(boolean update) {
+		this.noise = update;
 	}
-	public void isCorePoint() {
+	public void setCorePoint() {
 		this.corePoint = true;
+		unclassified = false;
 	}
-	public boolean getCorePoint() {
+	public boolean isCorePoint() {
 		return this.corePoint;
 	}
 	public double[] getValues() {
@@ -38,5 +40,14 @@ public class Point {
 	}
 	public int getCluster() {
 		return cluster;
+	}
+	public void addNeighbor(Point p) {
+		neighbors.add(p);
+		if(!p.neighbors.contains(this)) {
+			p.addNeighbor(this);
+		}
+	}
+	public Point getNeighbor() {
+		return neighbors.get(0);
 	}
  }

@@ -2,6 +2,6 @@ package proj4;
 
 public abstract class ClusteringAlgorithm {
 	
-	public void updateClusters(){}
+	public abstract void updateClusters();
 	
 }

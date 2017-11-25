@@ -23,6 +23,7 @@ public class Project4Application {
 		inputs = loadInputs(); 
 		DBScan db = new DBScan(inputs);
 		db.updateClusters();
+		db.returnClusters();
 	}
 	
 	private static double[][] loadInputs() {

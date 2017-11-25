@@ -22,14 +22,18 @@ public class Cluster {
 	public int getClusterID(Cluster c) {
 		return c.clusterID;
 	}
-	public ArrayList<Point> getCluster(Cluster c) {
+	public ArrayList<Point> getClusterPoints(Cluster c) {
 		return c.points;
 	}
+
 	public void removeCluster(Cluster c) {
 		if(c.minSize > c.points.size()) {
 			for(Point p : points) {
 				p.updateUnclassified(true);
 			}
 		}
+	}
+	public int clusterSize() {
+		return points.size();
 	}
 }
