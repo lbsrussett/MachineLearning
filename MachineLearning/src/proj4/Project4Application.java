@@ -6,6 +6,12 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/*Frogs Data Set: dimensions=21, inputVectors=7195, possibleClassifications=60, filename="Frogs_MFCCs.csv"*/
+/*3D Spatial: dimensions=4, inputVectors=434874, possibleClassifications=undefined, filename="3D_spatial_network.csv*/
+/*HTRU: dimensions=9, inputVectors=17898, possibleClassifications=2, filename="HTRU_2.csv"*/
+/*Seeds: dimensions=7, inputVectors=210, possibleClassifications=3, filename="seeds.csv"*/
+/*Wholesale: dimensions=8, inputVectors=440, possibleClassifications=undefined, filename="Wholesale_customers_data.csv"*/
+
 public class Project4Application {
 	private static int dimensions = 21; //How many inputs are passed in
 	private static int inputVectors = 7195; //How many arrays of inputs are tested
