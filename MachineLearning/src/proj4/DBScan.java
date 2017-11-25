@@ -110,11 +110,16 @@ public class DBScan extends ClusteringAlgorithm {
 	public Point[] returnPoints() {
 		return allPoints;
 	}
-	public void returnClusters() {
+	public void printClusters() {
 		System.out.println("There are " + clusters.size() + "clusters.");
 		for(int i = 0; i < clusters.size(); i++) {
 			System.out.println("Cluster " + i + "has " + clusters.get(i).clusterSize());
 		}
 		
+	}
+	@Override
+	public ArrayList<Cluster> returnClusters() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
