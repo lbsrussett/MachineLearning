@@ -6,15 +6,15 @@ public class ACO extends ClusteringAlgorithm {
 	private Point[] allPoints;
 	private Ant[] ants;
 	private ArrayList<Cluster> clusters = new ArrayList<Cluster>();
-	private final int NUMANTS = 20;
+	private final int NUM_ANTS = 20;
 	
 	public ACO(double[][] inputs) {
 		allPoints = new Point[inputs.length];
 		for(int i = 0; i < inputs.length; i++) {
 			this.allPoints[i] = new Point(inputs[i]);
 		}
-		ants = new Ant[NUMANTS];
-		for(int i = 0; i < NUMANTS; i++) {
+		ants = new Ant[NUM_ANTS];
+		for(int i = 0; i < NUM_ANTS; i++) {
 			ants[i] = new Ant(i);
 		}
 	}
