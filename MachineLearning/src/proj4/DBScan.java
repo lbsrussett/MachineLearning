@@ -6,7 +6,7 @@ public class DBScan extends ClusteringAlgorithm {
 	private Point[] allPoints = null;
 	private int clusterNum = 0;
 	private ArrayList<Cluster> clusters = new ArrayList<Cluster>();
-	private final double EPSILON = 1;
+	private final double EPSILON = 2;
 	private final int MINPOINTS = 5;
 	
 	public DBScan(double[][] inputs) {
@@ -17,24 +17,50 @@ public class DBScan extends ClusteringAlgorithm {
 		initCores();
 	}
 	private void initCores() {
-		for(int i = 0; i < allPoints.length; i++) {
-			Point point1 = allPoints[i];
+		int cores = 0;
+		for(Point a : allPoints) {
+			Point point1 = a;
 			int neighbors = 0;
-			for(int j = i+1; j < allPoints.length; j++) {
+			for(int j = 0; j < allPoints.length; j++) {
 				Point point2 = allPoints[j];
-				if(withinEpsilon(point1, point2)) {
-					neighbors++;
+				if(!point1.equals(point2) && point2.unclassified()) {
+					if(withinEpsilon(point1, point2)) {
+						neighbors++;
+					}
 				}
-				if(neighbors >= MINPOINTS) {
-					point1.setCorePoint();
-					clusterNum++;
-					Cluster c = new Cluster(MINPOINTS, clusterNum);
-					clusters.add(c);
-					c.addPoint(point1);
-					point1.updateCluster(c.getClusterID(c));
+			}
+			if(neighbors >= MINPOINTS) {
+				point1.setCorePoint();
+				cores++;
+			}
+		}
+		initClusters();
+		System.out.println(cores);
+	}
+	private void initClusters() {
+		ArrayList<Point> cp = new ArrayList<Point>();
+		for(Point a : allPoints) {
+			if(a.isCorePoint()) {
+				cp.add(a);
+			}
+		}
+		for(Point c: cp) {
+			if(c.getCluster() == null) {
+				for(int i = 0; i < cp.size(); i++) {
+					if(cp.get(i).getCluster() == null) {
+						if(!c.equals(cp.get(i)) && withinEpsilon(c, cp.get(i))) {
+							Cluster clust = new Cluster(MINPOINTS);
+							clusters.add(clust);
+							clust.addPoint(c);
+							clust.addPoint(cp.get(i));
+							c.updateCluster(clust);
+							cp.get(i).updateCluster(clust);
+						}
+					}
 				}
 			}
 		}
+		
 	}
 	public void updateClusters() {
 		for(int i = 0; i < allPoints.length; i++) {
@@ -43,11 +69,11 @@ public class DBScan extends ClusteringAlgorithm {
 			}
 		}
 		for(int i = 0; i < allPoints.length; i++) {
-			if(allPoints[i].unclassified()) {
+			if(allPoints[i].unclassified() && allPoints[i].isNoise() == false) {
 				if(isBorder(allPoints[i])) {
 					Point p = allPoints[i].getNeighbor();
 					allPoints[i].updateCluster(p.getCluster());
-					Cluster c = clusters.get(p.getCluster());
+					Cluster c = p.getCluster();
 					c.addPoint(allPoints[i]);
 				}
 			}
@@ -55,22 +81,26 @@ public class DBScan extends ClusteringAlgorithm {
 				allPoints[i].updateNoise(true);
 			}
 		}
+		//for()
 	}
 	private boolean isBorder(Point p) {
 		int neighbors = 0;
 		for(int i = 0; i < allPoints.length; i ++) {
-			if(allPoints[i] != p){
+			if(!allPoints[i].equals(p)){
 				double distance = euclideanDistance(p.getValues(), allPoints[i].getValues());
 				if(distance < EPSILON) {
 					neighbors++;
 					p.addNeighbor(allPoints[i]);
+					if(p.getCluster() == null) {
+						p.updateCluster(allPoints[i].getCluster());
+					}
 					allPoints[i].updateCluster(p.getCluster());
-					Cluster c = clusters.get(p.getCluster());
+					Cluster c = p.getCluster();
 					c.addPoint(allPoints[i]);
 				}
 			}
 		}
-		if(neighbors == 1) {
+		if(neighbors < MINPOINTS) {
 			return true;
 		}
 		else
@@ -78,12 +108,12 @@ public class DBScan extends ClusteringAlgorithm {
 	}
 	private void calcDistance(Point p) {
 			for(int i = 0; i < allPoints.length; i++) {
-				if(allPoints[i] != p) {
+				if(!allPoints[i].equals(p)) {
 					double distance = euclideanDistance(p.getValues(), allPoints[i].getValues());
 					//System.out.println(distance);
 					if(distance < EPSILON) {
 						p.addNeighbor(allPoints[i]);
-						Cluster c = clusters.get(p.getCluster());
+						Cluster c = p.getCluster();
 						c.addPoint(allPoints[i]);
 						allPoints[i].updateCluster(p.getCluster());
 					}
@@ -111,10 +141,10 @@ public class DBScan extends ClusteringAlgorithm {
 		return allPoints;
 	}
 	public void printClusters() {
-		System.out.println("There are " + clusters.size() + "clusters.");
-		for(int i = 0; i < clusters.size(); i++) {
-			System.out.println("Cluster " + i + "has " + clusters.get(i).clusterSize());
-		}
+		System.out.println("There are " + clusters.size() + " clusters.");
+		/*for(int i = 0; i < clusters.size(); i++) {
+			System.out.println("Cluster " + i + " has " + clusters.get(i).clusterSize());
+		}*/
 		
 	}
 	@Override

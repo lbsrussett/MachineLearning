@@ -3,22 +3,21 @@ package proj4;
 import java.util.ArrayList;
 
 public class Point {
-	private int cluster;
+	private Cluster cluster;
 	private boolean noise, corePoint, unclassified = true;
 	private double[] values;
 	private ArrayList<Point> neighbors = new ArrayList<Point>();
 	
 	public Point(double[] values) {
 		this.values = values;
-		this.cluster = -1;
-		this.noise = true;
+		this.cluster = null;
 		this.corePoint = false;
 	}
-	public void updateCluster(int c) {
+	public void updateCluster(Cluster c) {
 		this.cluster = c;
 		unclassified = false;
-		updateNoise(false);
 	}
+	
 	public void updateNoise(boolean update) {
 		this.noise = update;
 	}
@@ -29,6 +28,9 @@ public class Point {
 	public boolean isCorePoint() {
 		return this.corePoint;
 	}
+	public boolean isNoise() {
+		return this.noise;
+	}
 	public double[] getValues() {
 		return this.values;
 	}
@@ -38,7 +40,7 @@ public class Point {
 	public boolean unclassified() {
 		return this.unclassified;
 	}
-	public int getCluster() {
+	public Cluster getCluster() {
 		return cluster;
 	}
 	public void addNeighbor(Point p) {

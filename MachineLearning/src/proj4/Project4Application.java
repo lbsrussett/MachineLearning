@@ -13,17 +13,17 @@ import java.util.Scanner;
 /*Wholesale: dimensions=8, inputVectors=440, possibleClassifications=undefined, filename="Wholesale_customers_data.csv"*/
 
 public class Project4Application {
-	private static int dimensions = 21; //How many inputs are passed in
-	private static int inputVectors = 7195; //How many arrays of inputs are tested
-	private static int possibleClassifications = 60; //If the problem is multiClass, the number of classifcations
-	private static String filename = "Frogs_MFCCs.csv";
+	private static int dimensions = 7; //How many inputs are passed in
+	private static int inputVectors = 210; //How many arrays of inputs are tested
+	private static int possibleClassifications = 3; //If the problem is multiClass, the number of classifcations
+	private static String filename = "seeds.csv";
 	private static double[][] inputs = null;
 	
 	public static void main(String[] args) {
 		inputs = loadInputs(); 
 		DBScan db = new DBScan(inputs);
 		db.updateClusters();
-		db.returnClusters();
+		db.printClusters();
 	}
 	
 	private static double[][] loadInputs() {
