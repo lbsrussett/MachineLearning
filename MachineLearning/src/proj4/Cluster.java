@@ -10,6 +10,12 @@ public class Cluster {
 		this.points = new ArrayList<Point>();
 		this.minSize = minSize;
 	}
+        
+        /* @overload constructor. */
+        public Cluster(){
+            this.minSize = 0;
+            this.points = new ArrayList<Point>();
+        }
 	
 	public void addPoint(Point p) {
 		points.add(p);
