@@ -11,7 +11,7 @@ public class Cluster {
 		this.minSize = minSize;
 	}
         
-        /* @overload constructor. */
+        /* Overload constructor. */
         public Cluster(){
             this.minSize = 0;
             this.points = new ArrayList<Point>();
@@ -24,9 +24,13 @@ public class Cluster {
 		points.remove(points.indexOf(p));
 	}
 	
-	public ArrayList<Point> getClusterPoints(Cluster c) {
-		return c.points;
+	public ArrayList<Point> getClusterPoints() {
+		return points;
 	}
+        
+        public Point getPoint(int i){
+            return points.get(i);
+        }
 
 	public void removeCluster(Cluster c) {
 		if(c.minSize > c.points.size()) {
@@ -38,4 +42,5 @@ public class Cluster {
 	public int clusterSize() {
 		return points.size();
 	}
+
 }
