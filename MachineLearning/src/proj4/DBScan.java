@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 public class DBScan extends ClusteringAlgorithm {
 	private Point[] allPoints = null;
-	private int clusterNum = 0;
 	private ArrayList<Cluster> clusters = new ArrayList<Cluster>();
 	private final double EPSILON = 2;
 	private final int MINPOINTS = 5;
@@ -46,12 +45,12 @@ public class DBScan extends ClusteringAlgorithm {
 		}
 		for(Point c: cp) {
 			if(c.getCluster() == null) {
+				Cluster clust = new Cluster(MINPOINTS);
+				clusters.add(clust);
+				clust.addPoint(c);
 				for(int i = 0; i < cp.size(); i++) {
 					if(cp.get(i).getCluster() == null) {
 						if(!c.equals(cp.get(i)) && withinEpsilon(c, cp.get(i))) {
-							Cluster clust = new Cluster(MINPOINTS);
-							clusters.add(clust);
-							clust.addPoint(c);
 							clust.addPoint(cp.get(i));
 							c.updateCluster(clust);
 							cp.get(i).updateCluster(clust);
@@ -81,24 +80,33 @@ public class DBScan extends ClusteringAlgorithm {
 				allPoints[i].updateNoise(true);
 			}
 		}
-		evaluateClusters();
+		mergeClusters();
 	}
-	private void evaluateClusters() {
+	private void mergeClusters() {
 		for(Cluster c : clusters) {
 			if(c.clusterSize() < MINPOINTS) {
 				double distance;
 				double shortest;
+				Cluster newCluster = null;
 				ArrayList<Point> points = c.getClusterPoints();
 				c.removeCluster();
 				for(Point p : points) {
-					shortest = euclideanDistance(p.getValues(), cp.get(0).getValues());
-					Cluster newCluster = cp.get(0).getCluster();
-					for(int core = 1; core < cp.size(); core++) {
-						distance = euclideanDistance(p.getValues(), cp.get(core).getValues());
-						Cluster temp = cp.get(core).getCluster();
-						if(distance < shortest) {
-							shortest = distance;
-							newCluster = temp;
+					int core = 0;
+					do {
+						core++;
+					}
+					while(p.equals(cp.get(core)));
+					shortest = euclideanDistance(p.getValues(), cp.get(core).getValues());
+					newCluster = cp.get(core).getCluster();
+						
+					for(int i = core; i < cp.size(); i++) {
+						if(!p.equals(cp.get(i))) {
+							distance = euclideanDistance(p.getValues(), cp.get(i).getValues());
+							Cluster temp = cp.get(i).getCluster();
+							if(distance < shortest) {
+								shortest = distance;
+								newCluster = temp;
+							}
 						}
 					}
 					p.updateCluster(newCluster);

@@ -29,12 +29,10 @@ public class Cluster {
 	}
 
 	public void removeCluster() {
-		if(minSize > points.size()) {
 			for(Point p : points) {
-				removePoint(p);
+				//removePoint(p);
 				p.updateUnclassified(true);
 			}
-		}
 	}
 	public int clusterSize() {
 		return points.size();
