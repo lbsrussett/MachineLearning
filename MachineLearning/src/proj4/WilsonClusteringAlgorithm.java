@@ -1,3 +1,4 @@
+package proj4;
 
 public abstract class WilsonClusteringAlgorithm {
 	public abstract double[][] getCenters();

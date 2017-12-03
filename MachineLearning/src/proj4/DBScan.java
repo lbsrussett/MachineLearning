@@ -8,6 +8,7 @@ public class DBScan extends ClusteringAlgorithm {
 	private ArrayList<Cluster> clusters = new ArrayList<Cluster>();
 	private final double EPSILON = 2;
 	private final int MINPOINTS = 5;
+	ArrayList<Point> cp = new ArrayList<Point>();
 	
 	public DBScan(double[][] inputs) {
 		allPoints = new Point[inputs.length];
@@ -38,7 +39,6 @@ public class DBScan extends ClusteringAlgorithm {
 		System.out.println(cores);
 	}
 	private void initClusters() {
-		ArrayList<Point> cp = new ArrayList<Point>();
 		for(Point a : allPoints) {
 			if(a.isCorePoint()) {
 				cp.add(a);
@@ -81,7 +81,30 @@ public class DBScan extends ClusteringAlgorithm {
 				allPoints[i].updateNoise(true);
 			}
 		}
-		//for()
+		evaluateClusters();
+	}
+	private void evaluateClusters() {
+		for(Cluster c : clusters) {
+			if(c.clusterSize() < MINPOINTS) {
+				double distance;
+				double shortest;
+				ArrayList<Point> points = c.getClusterPoints();
+				c.removeCluster();
+				for(Point p : points) {
+					shortest = euclideanDistance(p.getValues(), cp.get(0).getValues());
+					Cluster newCluster = cp.get(0).getCluster();
+					for(int core = 1; core < cp.size(); core++) {
+						distance = euclideanDistance(p.getValues(), cp.get(core).getValues());
+						Cluster temp = cp.get(core).getCluster();
+						if(distance < shortest) {
+							shortest = distance;
+							newCluster = temp;
+						}
+					}
+					p.updateCluster(newCluster);
+				}
+			}
+		}
 	}
 	private boolean isBorder(Point p) {
 		int neighbors = 0;

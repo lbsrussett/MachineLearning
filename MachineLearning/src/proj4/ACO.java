@@ -40,25 +40,25 @@ public class ACO extends ClusteringAlgorithm {
 			grid[row][col] = allPoints[i];
 		}
 	}
-	public void startAnts() {
-		
+	public void startAnts(Point[][] grid) {
+		for(Ant a : ants) {
+			a.antSearch(grid);
+		}
 	}
-	public void updateClusters() {
+	public ArrayList<Cluster> findBestSolution() {
+		ArrayList<Cluster> solutions = new ArrayList<Cluster>();
 		
+		return solutions;
 	}
 	@Override
 	public ArrayList<Cluster> returnClusters() {
+		clusters = findBestSolution();
+		return clusters;
+	}
+	@Override
+	public void updateClusters() {
 		// TODO Auto-generated method stub
-		return null;
+		
 	}
-	private double euclideanDistance(double[] point1, double[] point2) {
-		double distance = 0;
-		for(int i = 0; i < point1.length; i++) {
-			double element = (point2[i] - point1[i]);
-			element = Math.pow(element, 2);
-			distance += element;
-		}
-		distance = Math.sqrt(distance);
-		return distance;
-	}
+	
 }

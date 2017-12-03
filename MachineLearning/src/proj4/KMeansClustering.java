@@ -1,3 +1,5 @@
+package proj4;
+
 import java.util.Random;
  
 public class KMeansClustering extends WilsonClusteringAlgorithm{

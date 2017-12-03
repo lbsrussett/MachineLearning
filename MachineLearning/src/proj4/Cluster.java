@@ -24,13 +24,14 @@ public class Cluster {
 		points.remove(points.indexOf(p));
 	}
 	
-	public ArrayList<Point> getClusterPoints(Cluster c) {
-		return c.points;
+	public ArrayList<Point> getClusterPoints() {
+		return points;
 	}
 
-	public void removeCluster(Cluster c) {
-		if(c.minSize > c.points.size()) {
+	public void removeCluster() {
+		if(minSize > points.size()) {
 			for(Point p : points) {
+				removePoint(p);
 				p.updateUnclassified(true);
 			}
 		}
