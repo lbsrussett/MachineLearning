@@ -21,11 +21,11 @@ public class Project4Application {
 	
 	public static void main(String[] args) {
 		inputs = loadInputs(); 
-		/*DBScan db = new DBScan(inputs);
+		DBScan db = new DBScan(inputs);
 		db.updateClusters();
-		db.printClusters();*/
-		ACO aco = new ACO(inputs);
-		aco.updateClusters();
+		db.printClusters();
+		/*ACO aco = new ACO(inputs);
+		aco.updateClusters();*/
 	}
 	
 	private static double[][] loadInputs() {
