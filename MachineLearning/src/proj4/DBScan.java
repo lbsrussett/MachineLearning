@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class DBScan extends ClusteringAlgorithm {
 	private Point[] allPoints = null;
 	private ArrayList<Cluster> clusters = new ArrayList<Cluster>();
-	private final double EPSILON = 2;
+	private final double EPSILON = 1.5;
 	private final int MINPOINTS = 5;
 	ArrayList<Point> cp = new ArrayList<Point>();
 	
