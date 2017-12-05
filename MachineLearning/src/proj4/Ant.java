@@ -11,32 +11,41 @@ public class Ant {
 	private int[] solution;
 	private double[][] pheromones;
 	private int clustNum;
+	private final double Q_0 = 0.98;
 	
 	public Ant(int clustNum, double[][] pheromones) {
 		solution = new int[pheromones.length];
+		this.clustNum = clustNum;
 		initSolutions();
 	}
 	private void initSolutions() {
 		for(int i = 0; i < solution.length; i++) {
 			Random rand = new Random();
-			solution[i] = rand.nextInt(2) + 1;
+			solution[i] = rand.nextInt(clustNum) + 1;
 		}
 		
 	}
 	public void antSearch(double[][] pheromones) {
 		solution = new int[pheromones.length];
 		this.pheromones = pheromones;
-		this.clustNum = clustNum;
 		createSolution();
 	}
 	private void createSolution() {
 		for(int i = 0; i < solution.length; i++) {
 			double highest = 0;
-			for(int j = 0; j < clustNum; j++) {
-				if(pheromones[i][j] > highest) {
-					highest = pheromones[i][j];
-					solution[i] = j+1;
+			Random rand = new Random();
+			double prob = rand.nextDouble();
+			if(prob < Q_0) {
+				for(int j = 0; j < clustNum; j++) {
+					if(pheromones[i][j] > highest) {
+						highest = pheromones[i][j];
+						solution[i] = j+1;
+					}
 				}
+			}
+			else {
+				int clust = rand.nextInt(clustNum);
+				solution[i] = clust+1;
 			}
 		}
 		

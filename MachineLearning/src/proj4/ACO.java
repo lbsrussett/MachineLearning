@@ -2,7 +2,7 @@ package proj4;
 
 import java.util.*;
 import java.util.Random;
-
+//double check the pheromone calculation - all values are ending up the same.
 public class ACO extends ClusteringAlgorithm {
 	private Point[] allPoints;
 	private Ant[] ants;
@@ -15,7 +15,7 @@ public class ACO extends ClusteringAlgorithm {
 	private int[] currentSol;
 	private final int NUM_ANTS = 20;
 	private final double Q = 0.80;
-	private final int ITERATIONS = 20;
+	private final int ITERATIONS = 10;
 	
 	
 	public ACO(double[][] inputs, int clustNum) {
@@ -58,9 +58,9 @@ public class ACO extends ClusteringAlgorithm {
 		for(int i = 0; i < ants.length; i++) {
 			sol[i] = ants[i].returnSolution();
 			double tempFit = 0;
-			ArrayList<Cluster> c = createClusters(sol[1]);
+			ArrayList<Cluster> c = createClusters(sol[i]);
 			for(int j = 0; j < c.size(); j++) {
-				tempFit += c.get(j).fitness();
+				tempFit += c.get(j).getAverageDistanceToCenter();
 			}
 			if(tempFit < fitness) {
 				fitness = tempFit;
@@ -83,7 +83,7 @@ public class ACO extends ClusteringAlgorithm {
 	private void updatePheromones() {
 		ArrayList<Cluster> c = findBestSolution();
 		for(int i = 0; i < c.size(); i++) {
-			double fitness = c.get(i).fitness();
+			double fitness = c.get(i).getAverageDistanceToCenter();
 			for(int j = 0; j < pheromones.length; j++) {
 				for(int k = 0; k < clustNum; k++) {
 					if(currentSol[j] == i+1) {
@@ -92,10 +92,8 @@ public class ACO extends ClusteringAlgorithm {
 				}
 			}
 		}
-		normalize();
+		//normalize();
 	}
-	
-	
 	private ArrayList<Cluster> createClusters(int[] sol) {
 		ArrayList<Cluster> soln = new ArrayList<Cluster>();
 		if(clustNum == 2) {
@@ -110,6 +108,8 @@ public class ACO extends ClusteringAlgorithm {
 					c2.addPoint(allPoints[i]);
 				}
 			}
+			c1.createCenter();
+			c2.createCenter();
 			soln.add(c1);
 			soln.add(c2);
 		}
@@ -121,12 +121,15 @@ public class ACO extends ClusteringAlgorithm {
 				if(sol[i] == 1) {
 					c1.addPoint(allPoints[i]);
 				}
-				else if(sol[1] == 2) {
+				else if(sol[i] == 2) {
 					c2.addPoint(allPoints[i]);
 				}
 				else
 					c3.addPoint(allPoints[i]);
 			}
+			c1.createCenter();
+			c2.createCenter();
+			c3.createCenter();
 			soln.add(c1);
 			soln.add(c2);
 			soln.add(c3);
@@ -145,13 +148,11 @@ public class ACO extends ClusteringAlgorithm {
 					max = pheromones[i][j];
 				}
 			}
-			
 		}
 		for(int i = 0; i < pheromones.length; i++) {
 			for(int j = 0; j < clustNum; j++) {
 				pheromones[i][j] = (pheromones[i][j]-min)/(max-min);
 			}
-			
 		}
 	}
 	private void initPheromones() {
@@ -160,40 +161,6 @@ public class ACO extends ClusteringAlgorithm {
 			for(int j = 0; j < clustNum; j++) {
 				pheromones[i][j] = 0.01;
 			}
-			
 		}
 	}
-	private double[] initProbabilities() {
-		Random rand = new Random();
-		double[] probs = new double[allPoints.length];
-		for(int i = 0; i < probs.length; i++) {
-			double random = rand.nextDouble();
-			if(random > 0.50) {
-				probs[i] = 0.51;
-			}
-			else {
-				probs[i] = 0.49;
-			}
-		}
-		return probs;
-	}
-	/*private void createGrid() {
-	Random rand = new Random();
-	for(int i = 0; i < grid.length; i++) {
-		for(int j = 0; j < grid[i].length; j++) {
-			grid[i][j] = null;
-		}
-	}
-	for(int i = 0; i < allPoints.length; i++) {
-		int row = rand.nextInt(allPoints.length);
-		int col= rand.nextInt(allPoints.length);
-		
-		while(grid[row][col] != null) {
-			row = rand.nextInt(allPoints.length);
-			col = rand.nextInt(allPoints.length);
-		}
-		grid[row][col] = allPoints[i];
-	}
-}*/
-
 }
