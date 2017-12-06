@@ -16,6 +16,15 @@ public class Cluster {
             this.minSize = 0;
             this.points = new ArrayList<Point>();
         }
+        
+        public Point getCenter(){		
+		for(Point p: points){		
+			if(p.isCorePoint()){		
+				return p;		
+			}		
+		}		
+		return null;		
+	}
 	
 	public double getAverageDistanceToCenter(){
 		Point center = this.getCenter();
@@ -114,7 +123,5 @@ public class Cluster {
 		return distance;
 	}
         
-        private Point getCenter(){
-            return points.get(0);
-        }
+
 }
