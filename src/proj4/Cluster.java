@@ -12,15 +12,8 @@ public class Cluster {
 		this.points = new ArrayList<Point>();
 		this.minSize = minSize;
 	}
-        
-
-        /* Overload constructor. */
-        public Cluster(){
-            this.minSize = 0;
-            this.points = new ArrayList<Point>();
-        }
-
-    public Point getCenter(){
+	
+	public Point getCenter(){
 		for(Point p: points){
 			if(p.isCorePoint()){
 				return p;
@@ -86,10 +79,6 @@ public class Cluster {
 	public ArrayList<Point> getClusterPoints(Cluster c) {
 		return c.points;
 	}
-        
-        public Point getPoint(int i){
-            return points.get(i);
-        }
 
 	public void removeCluster(Cluster c) {
 		if(c.minSize > c.points.size()) {
@@ -98,37 +87,8 @@ public class Cluster {
 			}
 		}
 	}
+	
 	public int clusterSize() {
 		return points.size();
-	}
-
-
-
-	public double fitness() {
-		Point center = getCenter();
-		double fitness = 0;
-		for(Point p : points) {
-			if(!p.equals(center)) {
-				fitness += euclideanDistance(center.getValues(), p.getValues());
-			}
-		}
-		return fitness;
-	}
- 	public void createCenter() {
-		Point center = null;
-		double[] values = getAveragePosition();
-		center = new Point(values);
-		center.setCorePoint();
-		addPoint(center);
-	}
-	private double euclideanDistance(double[] point1, double[] point2) {
-		double distance = 0;
-		for(int i = 0; i < point1.length; i++) {
-			double element = (point2[i] - point1[i]);
-			element = Math.pow(element, 2);
-			distance += element;
-		}
-		distance = Math.sqrt(distance);
-		return distance;
 	}
 }

@@ -1,64 +1,166 @@
 package proj4;
 
-import java.util.ArrayList;
+import java.util.*;
 import java.util.Random;
-
+//double check the pheromone calculation - all values are ending up the same.
 public class ACO extends ClusteringAlgorithm {
 	private Point[] allPoints;
 	private Ant[] ants;
-	private Point[][] grid;
+	//private Point[][] grid;
+	private double[][] pheromones;
 	private ArrayList<Cluster> clusters = new ArrayList<Cluster>();
+	private int clustNum, iterations = 0, termination = 0;
+	private double[] prob;
+	private double currentFitness = Double.MAX_VALUE;
+	private int[] currentSol;
 	private final int NUM_ANTS = 20;
+	private final double Q = 0.80;
+	private final int ITERATIONS = 10;
 	
-	public ACO(double[][] inputs) {
+	
+	public ACO(double[][] inputs, int clustNum) {
+		this.clustNum = clustNum;
 		allPoints = new Point[inputs.length];
 		for(int i = 0; i < inputs.length; i++) {
 			this.allPoints[i] = new Point(inputs[i]);
 		}
+		initPheromones();
 		ants = new Ant[NUM_ANTS];
 		for(int i = 0; i < NUM_ANTS; i++) {
-			ants[i] = new Ant(i);
+			ants[i] = new Ant(clustNum, pheromones);
 		}
-		grid = new Point[allPoints.length][allPoints.length];
-		createGrid();
-	}
-	private void createGrid() {
-		Random rand = new Random();
-		for(int i = 0; i < grid.length; i++) {
-			for(int j = 0; j < grid[i].length; j++) {
-				grid[i][j] = null;
-			}
-		}
-		for(int i = 0; i < allPoints.length; i++) {
-			int row = rand.nextInt(allPoints.length);
-			int col= rand.nextInt(allPoints.length);
-			
-			while(grid[row][col] != null) {
-				row = rand.nextInt(allPoints.length);
-				col = rand.nextInt(allPoints.length);
-			}
-			grid[row][col] = allPoints[i];
-		}
-	}
-	public void startAnts(Point[][] grid) {
-		for(Ant a : ants) {
-			a.antSearch(grid);
-		}
-	}
-	public ArrayList<Cluster> findBestSolution() {
-		ArrayList<Cluster> solutions = new ArrayList<Cluster>();
-		
-		return solutions;
-	}
-	@Override
-	public ArrayList<Cluster> returnClusters() {
-		clusters = findBestSolution();
-		return clusters;
-	}
-	@Override
-	public void updateClusters() {
-		// TODO Auto-generated method stub
 		
 	}
 	
+	public void startAnts() {
+		iterations++;
+		for(int i = 0; i < ants.length; i++) {
+			ants[i].antSearch(pheromones);
+		}
+	}
+	@Override
+	public void updateClusters() {
+		while(termination < ITERATIONS) {
+			updatePheromones();
+			startAnts();
+		}
+	}
+	@Override
+	public ArrayList<Cluster> returnClusters() {
+		System.out.println(iterations);
+		return clusters;
+	}
+	public ArrayList<Cluster> findBestSolution() {
+		int[][] sol = new int [ants.length][allPoints.length];
+		ArrayList<Cluster> solutions = new ArrayList<Cluster>();
+		Ant temp = null;
+		double fitness = Double.MAX_VALUE;
+		for(int i = 0; i < ants.length; i++) {
+			sol[i] = ants[i].returnSolution();
+			double tempFit = 0;
+			ArrayList<Cluster> c = createClusters(sol[i]);
+			for(int j = 0; j < c.size(); j++) {
+				tempFit += c.get(j).getAverageDistanceToCenter();
+			}
+			if(tempFit < fitness) {
+				fitness = tempFit;
+				temp = ants[i];
+				currentSol = ants[i].returnSolution();
+				solutions = c;
+			}
+		}
+		System.out.println(fitness);
+		System.out.println(currentFitness/allPoints.length);
+		
+		if(currentFitness > fitness) {
+			currentFitness = fitness;
+		}
+		else {
+			termination++;
+		}
+		return solutions;
+	}
+	private void updatePheromones() {
+		ArrayList<Cluster> c = findBestSolution();
+		for(int i = 0; i < c.size(); i++) {
+			double fitness = c.get(i).getAverageDistanceToCenter();
+			for(int j = 0; j < pheromones.length; j++) {
+				for(int k = 0; k < clustNum; k++) {
+					if(currentSol[j] == i+1) {
+						pheromones[j][k] += Q/fitness;
+					}
+				}
+			}
+		}
+		//normalize();
+	}
+	private ArrayList<Cluster> createClusters(int[] sol) {
+		ArrayList<Cluster> soln = new ArrayList<Cluster>();
+		if(clustNum == 2) {
+			Cluster c1 = new Cluster();
+			Cluster c2 = new Cluster();
+			c1.addPoint(allPoints[0]);
+			for(int i = 1; i < sol.length; i++) {
+				if(sol[i] == sol[0]) {
+					c1.addPoint(allPoints[i]);
+				}
+				else {
+					c2.addPoint(allPoints[i]);
+				}
+			}
+			c1.createCenter();
+			c2.createCenter();
+			soln.add(c1);
+			soln.add(c2);
+		}
+		else {
+			Cluster c1 = new Cluster();
+			Cluster c2 = new Cluster();
+			Cluster c3 = new Cluster();
+			for(int i = 0; i < sol.length; i++) {
+				if(sol[i] == 1) {
+					c1.addPoint(allPoints[i]);
+				}
+				else if(sol[i] == 2) {
+					c2.addPoint(allPoints[i]);
+				}
+				else
+					c3.addPoint(allPoints[i]);
+			}
+			c1.createCenter();
+			c2.createCenter();
+			c3.createCenter();
+			soln.add(c1);
+			soln.add(c2);
+			soln.add(c3);
+		}
+		return soln;
+	}
+	private void normalize() {
+		double min = Double.MAX_VALUE;
+		double max = Double.MIN_VALUE;
+		for(int i = 0; i < pheromones.length; i++) {
+			for(int j = 0; j < clustNum; j++) {
+				if(pheromones[i][j] < min) {
+					min = pheromones[i][j];
+				}
+				if(pheromones[i][j] > max) {
+					max = pheromones[i][j];
+				}
+			}
+		}
+		for(int i = 0; i < pheromones.length; i++) {
+			for(int j = 0; j < clustNum; j++) {
+				pheromones[i][j] = (pheromones[i][j]-min)/(max-min);
+			}
+		}
+	}
+	private void initPheromones() {
+		pheromones = new double[allPoints.length][clustNum];
+		for(int i = 0; i < allPoints.length; i++) {
+			for(int j = 0; j < clustNum; j++) {
+				pheromones[i][j] = 0.01;
+			}
+		}
+	}
 }

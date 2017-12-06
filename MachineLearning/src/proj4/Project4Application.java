@@ -7,25 +7,26 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /*Frogs Data Set: dimensions=21, inputVectors=7195, possibleClassifications=60, filename="Frogs_MFCCs.csv"*/
-/*3D Spatial: dimensions=4, inputVectors=434874, possibleClassifications=undefined, filename="3D_spatial_network.csv*/
-/*HTRU: dimensions=9, inputVectors=17898, possibleClassifications=2, filename="HTRU_2.csv"*/
+/*3D Spatial: dimensions=4, inputVectors=20000, possibleClassifications=undefined, filename="3D_spatial_network.csv*/
+/*HTRU: dimensions=8, inputVectors=17898, possibleClassifications=2, filename="HTRU_2.csv"*/
 /*Seeds: dimensions=7, inputVectors=210, possibleClassifications=3, filename="seeds.csv"*/
 /*Wholesale: dimensions=8, inputVectors=440, possibleClassifications=undefined, filename="Wholesale_customers_data.csv"*/
 
 public class Project4Application {
-	private static int dimensions = 21; //How many inputs are passed in
+	private static int dimensions = 4; //How many inputs are passed in
 	private static int inputVectors = 210; //How many arrays of inputs are tested
 	private static int possibleClassifications = 3; //If the problem is multiClass, the number of classifications
-	private static String filename = "Frogs_MFCCs.csv";
+	private static String filename = "3D_spatial_network.csv";
 	private static double[][] inputs = null;
 	
 	public static void main(String[] args) {
 		inputs = loadInputs(); 
-		DBScan db = new DBScan(inputs);
+		/*DBScan db = new DBScan(inputs);
 		db.updateClusters();
-		db.printClusters();
-		/*ACO aco = new ACO(inputs);
-		aco.updateClusters();*/
+		db.printClusters();*/
+		ACO aco = new ACO(inputs, 2);
+		aco.updateClusters();
+		ArrayList<Cluster> clusters = aco.returnClusters();
 	}
 	
 	private static double[][] loadInputs() {

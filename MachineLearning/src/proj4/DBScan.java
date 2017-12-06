@@ -1,3 +1,4 @@
+
 package proj4;
 
 import java.util.ArrayList;
@@ -180,7 +181,6 @@ public class DBScan extends ClusteringAlgorithm {
 	}
 	@Override
 	public ArrayList<Cluster> returnClusters() {
-		// TODO Auto-generated method stub
-		return null;
+		return clusters;
 	}
 }
