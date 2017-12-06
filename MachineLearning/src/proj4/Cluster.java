@@ -21,19 +21,31 @@ public class Cluster {
 		this.minSize = minSize;
 	}
         
-	/* @overload constructor. */
-	public Cluster(){
-		this.minSize = 0;
-		this.points = new ArrayList<Point>();
-	}
-	
-	public Point getCenter(){
+
+        /* Overload constructor. */
+        public Cluster(){
+            this.minSize = 0;
+            this.points = new ArrayList<Point>();
+        }
+
+
+    public Point getCenter(){
 		for(Point p: points){
 			if(p.isCorePoint()){
 				return p;
 			}
 		}
 		return null;
+
+        
+        public Point getCenter(){		
+		for(Point p: points){		
+			if(p.isCorePoint()){		
+				return p;		
+			}		
+		}		
+		return null;		
+
 	}
 	
 	public double getAverageDistanceToCenter(){
@@ -41,19 +53,10 @@ public class Cluster {
 		double[] centerValues = center.getValues();
 		double sumDistance = 0;
 		int combinations = 0;
-		for(int i = 0; i < centerValues.length; i++){
-			System.out.print(centerValues[i]+ " ");
-		}
-		System.out.println();
 		for(Point p: points){
 			if(p!=center){
 				combinations++;
-				for(int i = 0; i < centerValues.length; i++){
-					System.out.print(p.getValues()[i]+ " ");
-				}
-				System.out.println();
 				sumDistance+=getDistance(p.getValues(),centerValues);
-				System.out.println(getDistance(p.getValues(),centerValues));
 			}
 		}
 		return sumDistance/combinations;
@@ -69,7 +72,7 @@ public class Cluster {
 			if(!p.isCorePoint()){
 				double[] pointValues = p.getValues();
 				for(int dimension = 0; dimension < values.length; dimension++){
-					values[dimension]+=pointValues[dimension];
+					values[dimension]+=pointValues[0];
 				}
 			}
 		}
@@ -87,8 +90,6 @@ public class Cluster {
 		return Math.sqrt(sumDistance);
 	}
 	
-	
-    
 	public void addPoint(Point p) {
 		points.add(p);
 	}
@@ -97,17 +98,56 @@ public class Cluster {
 		points.remove(points.indexOf(p));
 	}
 	
+	
 	public ArrayList<Point> getClusterPoints() {
 		return points;
 	}
+        
+        public Point getPoint(int i){
+            return points.get(i);
+        }
 
-	public void removeCluster() {
+	public void removeCluster(Cluster c) {
+		if(c.minSize > c.points.size()) {
 			for(Point p : points) {
 				//removePoint(p);
 				p.updateUnclassified(true);
 			}
+		}
 	}
 	public int clusterSize() {
 		return points.size();
 	}
+
+
+
+	public double fitness() {
+		Point center = this.getCenter();
+		double fitness = 0;
+		for(Point p : points) {
+			if(!p.equals(center)) {
+				fitness += euclideanDistance(center.getValues(), p.getValues());
+			}
+		}
+		return fitness;
+	}
+ 	public void createCenter() {
+		Point center = null;
+		double[] values = getAveragePosition();
+		center = new Point(values);
+		center.setCorePoint();
+		addPoint(center);
+	}
+	private double euclideanDistance(double[] point1, double[] point2) {
+		double distance = 0;
+		for(int i = 0; i < point1.length; i++) {
+			double element = (point2[i] - point1[i]);
+			element = Math.pow(element, 2);
+			distance += element;
+		}
+		distance = Math.sqrt(distance);
+		return distance;
+	}
+        
+
 }

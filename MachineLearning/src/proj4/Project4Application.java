@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /*Frogs Data Set: dimensions=21, inputVectors=7195, possibleClassifications=60, filename="Frogs_MFCCs.csv"*/
-/*3D Spatial: dimensions=4, inputVectors=434874, possibleClassifications=undefined, filename="3D_spatial_network.csv*/
+/*3D Spatial: dimensions=4, inputVectors=20000, possibleClassifications=undefined, filename="3D_spatial_network.csv*/
 /*HTRU: dimensions=8, inputVectors=17898, possibleClassifications=2, filename="HTRU_2.csv"*/
 /*Seeds: dimensions=7, inputVectors=210, possibleClassifications=3, filename="seeds.csv"*/
 /*Wholesale: dimensions=8, inputVectors=440, possibleClassifications=undefined, filename="Wholesale_customers_data.csv"*/
@@ -15,8 +15,8 @@ import java.util.Scanner;
 public class Project4Application {
 	private static int dimensions = 7; //How many inputs are passed in
 	private static int inputVectors = 210; //How many arrays of inputs are tested
-	private static int possibleClassifications = 3; //If the problem is multiClass, the number of classifications
-	private static String filename = "seeds.csv";
+	private static int possibleClassifications = 3; //If the problem is multiClass, the number of classifcations
+	private static String filename = "HTRU_2.csv";
 	private static double[][] inputs = null;
 	
 	public static void main(String[] args) {
@@ -24,9 +24,18 @@ public class Project4Application {
 		/*DBScan db = new DBScan(inputs);
 		db.updateClusters();
 		db.printClusters();*/
-		ACO aco = new ACO(inputs, 2);
-		aco.updateClusters();
-		ArrayList<Cluster> clusters = aco.returnClusters();
+		//ACO aco = new ACO(inputs);
+		//aco.updateClusters();
+                
+                
+                
+//                double[][] inputs = {{9, 9, 9}, {3, 5, 7 }, {4, 5, 8}, {5, 6, 20}, {1, 4, 6}, {5, 5, 5}, {6, 6, 6}, {7, 7, 7}, {8, 8, 8}, {9, 9, 9}, {9, 8, 12}, {15, 15, 15}, {12, 12, 13}, {13, 14, 16}, {13, 15, 12}, {13, 12, 12}};
+
+                /* Use this setting for HTRU. */
+                PSO pso = new PSO(inputs, 100, 8, .1, .30, 5.5, .3);
+                ArrayList<Cluster> clusters = pso.returnClusters();
+                System.out.println();
+                
 	}
 	
 	private static double[][] loadInputs() {
