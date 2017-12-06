@@ -87,8 +87,7 @@ public class PSO extends ClusteringAlgorithm {
          * outerspace.
          */
         ArrayList<Particle> allParticlestmp = new ArrayList(numParticles);
-        
-       
+
         
         for (int i = 0; i < numParticles; i++){
              int rndIdx = (int) Math.ceil(Math.random() * (allPoints.size() - 1));
@@ -124,11 +123,19 @@ public class PSO extends ClusteringAlgorithm {
             }
 
             /* For each particle collect points via findClusterPoints(). */
+
+            for (int i = 0; i < allParticles.size(); i++){   System.out.println("ENTER Do/while for loop2..");
+                findClusterPoints(allParticles.get(i));
+            }
+
+            for (int i = 0; i < allParticles.size(); i++){  System.out.println("ENTER Do/while for loop3..");
+
             for (int i = 0; i < allParticles.size(); i++){
                 findClusterPoints(allParticles.get(i));
             }
 
             for (int i = 0; i < allParticles.size(); i++){
+
                 double fitness = allParticles.get(i).clusterFitness();
                 if (fitness < gbestFitness && fitness > 0){   /* If it's zero, it's a single point. */
                     /* Save the fitness as the best. */
@@ -154,6 +161,15 @@ public class PSO extends ClusteringAlgorithm {
             deltaGbestIter++;
             
 
+            ////*************************////
+            System.out.println(gbestFitness);
+            System.out.println(tmpCluster);
+//        if (tmpCluster.clusterSize() == 0){
+//            return tmpCluster;
+//        }
+
+
+
         } while (deltaGbestIter < 6);
         
         //globalClusters.add(tmpCluster);
@@ -176,6 +192,42 @@ public class PSO extends ClusteringAlgorithm {
         Cluster tmpCluster = null;
         
         
+
+        
+      
+        for (int i = 0; i < numClusters; i++) {            System.out.println("returnCluster  TOP..");
+            tmpCluster = evaluateParticles();   /* Do this as many times as there are total clusters. Each time will get a cluster. */
+            
+            if (tmpCluster == null){
+                return globalClusters;
+            }
+            if (tmpCluster.clusterSize() == 0){
+                zeroIteration++;
+            }
+
+            /* Before we do it again, we need to remove the points from the population. The global points array should
+             * get smaller as we go.   */
+            //if (tmpCluster != null) {
+            for (int k = 0; k < tmpCluster.clusterSize(); k++){      System.out.println("returnCluster  Find a Cluster.");
+                double[] tmp = tmpCluster.getPoint(k).getValues();
+                /* Now remove it from the set of total points. */
+                for (int j = 0; j < allPoints.size(); j++){           System.out.println("returnCluster  Remove Points.");
+                    if (Arrays.equals(allPoints.get(j).getValues(), tmp)) {
+                        /* Remove the thing. */
+                        allPoints.remove(j);
+                        break;
+                    }
+                }
+            }
+            globalClusters.add(tmpCluster);
+            tmpCluster = null;
+            
+            
+            
+            if (zeroIteration == 5 || allPoints.size() == 0) {
+            return globalClusters;
+        }  
+
      
       
         for (int i = 0; i < numClusters; i++) { 
@@ -217,6 +269,7 @@ public class PSO extends ClusteringAlgorithm {
         
             } else { break; }
         
+
         }
         
         return globalClusters;

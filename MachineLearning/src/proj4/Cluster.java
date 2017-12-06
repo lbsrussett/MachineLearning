@@ -11,11 +11,22 @@ public class Cluster {
 		this.minSize = minSize;
 	}
         
+
         /* Overload constructor. */
         public Cluster(){
             this.minSize = 0;
             this.points = new ArrayList<Point>();
         }
+
+
+    public Point getCenter(){
+		for(Point p: points){
+			if(p.isCorePoint()){
+				return p;
+			}
+		}
+		return null;
+
         
         public Point getCenter(){		
 		for(Point p: points){		
@@ -24,6 +35,7 @@ public class Cluster {
 			}		
 		}		
 		return null;		
+
 	}
 	
 	public double getAverageDistanceToCenter(){
@@ -95,6 +107,9 @@ public class Cluster {
 	public int clusterSize() {
 		return points.size();
 	}
+
+
+
 	public double fitness() {
 		Point center = this.getCenter();
 		double fitness = 0;
