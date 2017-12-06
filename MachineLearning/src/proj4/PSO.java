@@ -87,7 +87,7 @@ public class PSO extends ClusteringAlgorithm {
          * outerspace.
          */
         ArrayList<Particle> allParticlestmp = new ArrayList(numParticles);
-       
+
         
         for (int i = 0; i < numParticles; i++){
              int rndIdx = (int) Math.ceil(Math.random() * (allPoints.size() - 1));
@@ -123,11 +123,19 @@ public class PSO extends ClusteringAlgorithm {
             }
 
             /* For each particle collect points via findClusterPoints(). */
+
             for (int i = 0; i < allParticles.size(); i++){   System.out.println("ENTER Do/while for loop2..");
                 findClusterPoints(allParticles.get(i));
             }
 
             for (int i = 0; i < allParticles.size(); i++){  System.out.println("ENTER Do/while for loop3..");
+
+            for (int i = 0; i < allParticles.size(); i++){
+                findClusterPoints(allParticles.get(i));
+            }
+
+            for (int i = 0; i < allParticles.size(); i++){
+
                 double fitness = allParticles.get(i).clusterFitness();
                 if (fitness < gbestFitness && fitness > 0){   /* If it's zero, it's a single point. */
                     /* Save the fitness as the best. */
@@ -152,12 +160,16 @@ public class PSO extends ClusteringAlgorithm {
             
             deltaGbestIter++;
             
+
             ////*************************////
             System.out.println(gbestFitness);
             System.out.println(tmpCluster);
 //        if (tmpCluster.clusterSize() == 0){
 //            return tmpCluster;
 //        }
+
+
+
         } while (deltaGbestIter < 6);
         
         //globalClusters.add(tmpCluster);
@@ -180,6 +192,7 @@ public class PSO extends ClusteringAlgorithm {
         Cluster tmpCluster = null;
         
         
+
         
       
         for (int i = 0; i < numClusters; i++) {            System.out.println("returnCluster  TOP..");
@@ -214,6 +227,49 @@ public class PSO extends ClusteringAlgorithm {
             if (zeroIteration == 5 || allPoints.size() == 0) {
             return globalClusters;
         }  
+
+     
+      
+        for (int i = 0; i < numClusters; i++) { 
+            
+            if (allPoints.size() > 0){
+            
+            
+                       System.out.println("Evaluate Particles.");
+            tmpCluster = evaluateParticles();   /* Do this as many times as there are total clusters. Each time will get a cluster. */
+            System.out.println(gbestFitness);
+            
+            
+            if (tmpCluster != null){
+
+
+                System.out.println("Pop points.");
+                System.out.println("population Before = " + allPoints.size());
+                
+                
+                for (int k = 0; k < tmpCluster.clusterSize(); k++){  
+                    double[] tmp = tmpCluster.getPoint(k).getValues();
+                    /* Now remove it from the set of total points. */
+                    for (int j = 0; j < allPoints.size(); j++){
+                        if (Arrays.equals(allPoints.get(j).getValues(), tmp)) {
+                            /* Remove the thing. */
+                            allPoints.remove(j);
+                            break;
+                        }
+                    }
+                }
+            
+                System.out.println("population After = " + allPoints.size());
+                globalClusters.add(tmpCluster);
+                System.out.println("Add To global cluster.");
+                tmpCluster = null;
+                this.gbestFitness = Double.MAX_VALUE; /* Reset. */
+            }
+    
+        
+            } else { break; }
+        
+
         }
         
         return globalClusters;

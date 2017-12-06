@@ -13,10 +13,10 @@ import java.util.Scanner;
 /*Wholesale: dimensions=8, inputVectors=440, possibleClassifications=undefined, filename="Wholesale_customers_data.csv"*/
 
 public class Project4Application {
-	private static int dimensions = 4; //How many inputs are passed in
+	private static int dimensions = 7; //How many inputs are passed in
 	private static int inputVectors = 210; //How many arrays of inputs are tested
-	private static int possibleClassifications = 3; //If the problem is multiClass, the number of classifications
-	private static String filename = "3D_spatial_network.csv";
+	private static int possibleClassifications = 3; //If the problem is multiClass, the number of classifcations
+	private static String filename = "HTRU_2.csv";
 	private static double[][] inputs = null;
 	
 	public static void main(String[] args) {
@@ -24,9 +24,18 @@ public class Project4Application {
 		/*DBScan db = new DBScan(inputs);
 		db.updateClusters();
 		db.printClusters();*/
-		ACO aco = new ACO(inputs, 2);
-		aco.updateClusters();
-		ArrayList<Cluster> clusters = aco.returnClusters();
+		//ACO aco = new ACO(inputs);
+		//aco.updateClusters();
+                
+                
+                
+//                double[][] inputs = {{9, 9, 9}, {3, 5, 7 }, {4, 5, 8}, {5, 6, 20}, {1, 4, 6}, {5, 5, 5}, {6, 6, 6}, {7, 7, 7}, {8, 8, 8}, {9, 9, 9}, {9, 8, 12}, {15, 15, 15}, {12, 12, 13}, {13, 14, 16}, {13, 15, 12}, {13, 12, 12}};
+
+                /* Use this setting for HTRU. */
+                PSO pso = new PSO(inputs, 100, 8, .1, .30, 5.5, .3);
+                ArrayList<Cluster> clusters = pso.returnClusters();
+                System.out.println();
+                
 	}
 	
 	private static double[][] loadInputs() {

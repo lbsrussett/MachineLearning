@@ -83,10 +83,17 @@ public class Particle {
         double[] gbestV             = new double[curPos.length];
         
         /* Difference */
+
         //lbestV = vectorAddition(gbest,curPos, 0);
         //gbestV = vectorAddition(lbest, curPos, 0);
         lbestV = vectorAddition(curPos, gbest, 0);
         gbestV = vectorAddition(curPos, lbest, 0);
+
+        lbestV = vectorAddition(gbest,curPos, 0);
+        gbestV = vectorAddition(lbest, curPos, 0);
+        //lbestV = vectorAddition(curPos, gbest, 0);
+        //gbestV = vectorAddition(curPos, lbest, 0);
+
         /* Scalar calculations. */
         nextVelocity = vectorScalarMult(omega, curPos);
         lbestV = vectorScalarMult(iPhi * learnFactor_1, lbestV);
@@ -270,12 +277,20 @@ public class Particle {
          * append it to the iterative container. When you get to the end, they've
          * all been found.    This is the final cluster.  */
         double distToCurPoint = 0;
+
         for(int i = 0; i < cluster.clusterSize(); i++){    System.out.println("i = %d" + i);
+
+        for(int i = 0; i < cluster.clusterSize(); i++){
+
             for (int j = 0; j < allPoints.size(); j++){
                 if (iDistanceVector[j] - Double.MAX_VALUE != 0){
                     distToCurPoint = distance(cluster.getPoint(i).getValues(), 
                                             allPoints.get(j).getValues());
+
                     if (/*distToCurPoint != 0 &&*/ distToCurPoint <= rho){
+
+                    if (distToCurPoint != 0 && distToCurPoint <= rho){
+
                         /* Append the point to the cluster. */
                         cluster.addPoint(allPoints.get(j));
                         iDistanceVector[j] = Double.MAX_VALUE;
