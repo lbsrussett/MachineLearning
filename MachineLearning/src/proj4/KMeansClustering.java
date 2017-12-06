@@ -1,21 +1,35 @@
-package proj4;
-
+import java.util.ArrayList;
 import java.util.Random;
  
-public class KMeansClustering extends WilsonClusteringAlgorithm{
+public class KMeansClustering extends ClusteringAlgorithm{
 	private double[][] centers;
-	private int[] centerForInput;
+	private int k;
+	private ArrayList<Cluster> clusters = new ArrayList<Cluster>();
+	private ArrayList<Point> points = new ArrayList<Point>();
+	private double[][] inputs;
+	private boolean valid;
 	
-	public double[][] getCenters(){
-		return this.centers;
+	public void setInputs(double[][] inputs){
+		this.inputs = inputs;
 	}
 	
-	public int[] getCenterForInputs(){
-		return this.centerForInput;
+	public ArrayList<Cluster> returnClusters(){
+		return this.clusters;
 	}
 	
-	public void createClusterCenters(int k, double inputs[][]) throws Exception{
+	public void setNumberOfClusters(int k){
+		this.k = k;
+	}
+	
+	private void printEvaluation(int iteration){
+		System.out.print("K-Means on iteration " + iteration + " with " + this.k + " clusters strength: ");
+		this.valid = WilsonProject4Application.evaluateCluster(this, this.inputs, false);
+	}
+	
+	public void updateClusters(double inputs[][]){
 		int dimensionOfInputs = inputs[0].length;//Assumes every input has the same dimension
+		this.clusters = new ArrayList<Cluster>();
+		this.valid = true;
  	
  		//Find min and max of each dimension
  		double[] minimum = new double[dimensionOfInputs];
@@ -27,6 +41,8 @@ public class KMeansClustering extends WilsonClusteringAlgorithm{
  		}
  		//Set the min and max arrays to their actual values
  		for(int input = 0; input < inputs.length; input++){
+ 			Point p = new Point(inputs[input]);
+ 			points.add(p);
  			for(int dimension = 0; dimension < dimensionOfInputs; dimension++){
  				if(inputs[input][dimension]<minimum[dimension]){
  					minimum[dimension]=inputs[input][dimension];
@@ -37,34 +53,34 @@ public class KMeansClustering extends WilsonClusteringAlgorithm{
  			}
  		}
  		
- 		//The center that an input is currently assigned to
- 		int[] centerForInput = new int[inputs.length];
- 		
  		//Randomly assign centers for the k clusters
- 		double[][] centers = new double[k][dimensionOfInputs];
  		Random rand = new Random();
- 		for(int input = 0; input < k; input++){
+ 		for(int center = 0; center < k; center++){
+ 			double[] centerValues = new double[dimensionOfInputs];
  			for(int dimension = 0; dimension < dimensionOfInputs; dimension++){
- 				centers[input][dimension] = (maximum[dimension] - minimum[dimension])*rand.nextDouble() + minimum[dimension];
+ 				centerValues[dimension] = (maximum[dimension] - minimum[dimension])*rand.nextDouble() + minimum[dimension];
  			}
+ 			Point centerPoint = new Point(centerValues);
+ 			centerPoint.setCorePoint();
+ 			Cluster cluster = new Cluster(1,center);
+ 			cluster.addPoint(centerPoint);
+ 			this.clusters.add(cluster);
  		}
  	
  		//Repeat until centers converge
  		boolean changeHappened = true;
+ 		int iteration = 1;
  		while(changeHappened){
  			changeHappened = false;
  			
  			//Assign points to centers using Euclidean distance
-			for(int input = 0; input < inputs.length; input++){//For each input
+			for(Point p: points){//For each point
 				double[] distances = new double[k];
- 				for(int center = 0; center < k; center++){//For each center
- 					double sumOfDistancesSquared = 0;
- 					for(int dimension = 0; dimension<dimensionOfInputs; dimension++){//For each dimension
- 						//Get the distance squared
- 						sumOfDistancesSquared += Math.pow((centers[center][dimension]-inputs[input][dimension]),2);
- 					}
- 					//We would typically take the square root for true Euclidean distance, but it will not affect results not to squareroot
- 					distances[center] = sumOfDistancesSquared;
+				int index = 0;
+ 				for(Cluster cluster: clusters){//For each center
+ 					Point center = cluster.getCenter();
+ 					distances[index] = Cluster.getDistance(p.getValues(), center.getValues());
+ 					index++;
  				}
  				
  				//Find minimum distance
@@ -78,47 +94,29 @@ public class KMeansClustering extends WilsonClusteringAlgorithm{
  				}
  				
  				//Update which input a center belongs to
- 				if(centerForInput[input] != closestCenter){
+ 				if(p.getCluster() == null){
+ 					changeHappened = true;
+ 					clusters.get(closestCenter).addPoint(p);
+ 					p.updateCluster(clusters.get(closestCenter));
+ 				}else if(p.getCluster().getId() != closestCenter){
 					changeHappened = true;
- 					centerForInput[input] = closestCenter;
+ 					clusters.get(closestCenter).addPoint(p);
+ 					p.updateCluster(clusters.get(closestCenter));
  				}
  			}
  			
  			//Update center values by averaging all inputs pointing to that center
+			printEvaluation(iteration++);
+			
  			if(changeHappened){
- 				//Number of inputs assigned to a specific cluster
- 				int[] numberOfInputs = new int[k];
- 				
- 				//Set centers to 0
- 				for(int centerLoop = 0; centerLoop < k; centerLoop++){
- 					for(int dimensionLoop = 0; dimensionLoop<dimensionOfInputs; dimensionLoop++){
- 						centers[centerLoop][dimensionLoop] = 0;
- 					}
+ 				for(Cluster cluster: clusters){
+ 					cluster.getCenter().setValues(cluster.getAveragePosition());
  				}
- 				
- 				//Adds all the input values assigned to a centers
- 				for(int input = 0; input < inputs.length; input++){
- 					numberOfInputs[centerForInput[input]]++;//Adds up number of inputs that have this center
- 					for(int dimension = 0; dimension<dimensionOfInputs; dimension++){
- 						//Adds up all the input values for the center the input is assigned to
- 						centers[centerForInput[input]][dimension]+=inputs[input][dimension];
- 					}
- 				}
- 				
- 				//Completes averaging for inputs at their centers
- 				for(int center = 0; center < k; center++){
- 					for(int dimensionLoop = 0; dimensionLoop<dimensionOfInputs; dimensionLoop++){
- 						if(numberOfInputs[center] == 0){
- 							throw new Exception();
- 						}
- 						//Divides the sum of the input values at a center by the number of inputs assigned to that center
- 						centers[center][dimensionLoop] = centers[center][dimensionLoop]/numberOfInputs[center];
- 					}
- 				}
- 				
+ 			}
+ 			
+ 			if(!this.valid){
+ 				break;
  			}
  		}
- 		this.centers = centers;
- 		this.centerForInput = centerForInput;
  	}
 }

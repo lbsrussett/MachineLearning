@@ -1,5 +1,3 @@
-package proj4;
-
 import java.util.ArrayList;
 
 public class Point {
@@ -13,11 +11,16 @@ public class Point {
 		this.cluster = null;
 		this.corePoint = false;
 	}
+	
 	public void updateCluster(Cluster c) {
 		this.cluster = c;
 		unclassified = false;
 	}
 	
+	
+	public void setValues(double[] values) {
+		this.values = values;
+	}
 	public void updateNoise(boolean update) {
 		this.noise = update;
 	}
