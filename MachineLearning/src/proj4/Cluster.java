@@ -5,26 +5,25 @@ import java.util.ArrayList;
 public class Cluster {
 	private ArrayList<Point> points;
 	private int minSize;
-	private int clusterID;
 	
-	public Cluster(int minSize, int cluster) {
-		this.clusterID = cluster;
+	public Cluster(int minSize) {
 		this.points = new ArrayList<Point>();
 		this.minSize = minSize;
 	}
         
-    /* @overload constructor. */
-    public Cluster(){
-        this.minSize = 0;
-        this.points = new ArrayList<Point>();
-    }
-    public Point getCenter(){
-		for(Point p: points){
-			if(p.isCorePoint()){
-				return p;
-			}
-		}
-		return null;
+        /* Overload constructor. */
+        public Cluster(){
+            this.minSize = 0;
+            this.points = new ArrayList<Point>();
+        }
+        
+        public Point getCenter(){		
+		for(Point p: points){		
+			if(p.isCorePoint()){		
+				return p;		
+			}		
+		}		
+		return null;		
 	}
 	
 	public double getAverageDistanceToCenter(){
@@ -77,13 +76,14 @@ public class Cluster {
 		points.remove(points.indexOf(p));
 	}
 	
-	public int getClusterID(Cluster c) {
-		return c.clusterID;
-	}
 	
-	public ArrayList<Point> getClusterPoints(Cluster c) {
-		return c.points;
+	public ArrayList<Point> getClusterPoints() {
+		return points;
 	}
+        
+        public Point getPoint(int i){
+            return points.get(i);
+        }
 
 	public void removeCluster(Cluster c) {
 		if(c.minSize > c.points.size()) {
@@ -96,7 +96,7 @@ public class Cluster {
 		return points.size();
 	}
 	public double fitness() {
-		Point center = getCenter();
+		Point center = this.getCenter();
 		double fitness = 0;
 		for(Point p : points) {
 			if(!p.equals(center)) {
@@ -122,4 +122,6 @@ public class Cluster {
 		distance = Math.sqrt(distance);
 		return distance;
 	}
+        
+
 }
