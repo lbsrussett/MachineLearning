@@ -1,16 +1,15 @@
-
-package proj4;
-
 import java.util.ArrayList;
 
 public class DBScan extends ClusteringAlgorithm {
 	private Point[] allPoints = null;
 	private ArrayList<Cluster> clusters = new ArrayList<Cluster>();
-	private final double EPSILON = 1.5;
-	private final int MINPOINTS = 5;
+	public double EPSILON = 1.5;
+	public  int MINPOINTS = 5;
 	ArrayList<Point> cp = new ArrayList<Point>();
 	
-	public DBScan(double[][] inputs) {
+	public DBScan(double[][] inputs, double epsilon, int minpoints) {
+		this.EPSILON = epsilon;
+		this.MINPOINTS = minpoints;
 		allPoints = new Point[inputs.length];
 		for(int i = 0; i < inputs.length; i++) {
 			this.allPoints[i] = new Point(inputs[i]);
@@ -60,14 +59,15 @@ public class DBScan extends ClusteringAlgorithm {
 				}
 			}
 		}
-		
 	}
-	public void updateClusters() {
+	public void updateClusters(double input[][]) {
+		System.out.println("here");
 		for(int i = 0; i < allPoints.length; i++) {
 			if(allPoints[i].isCorePoint()) {
 				calcDistance(allPoints[i]);
 			}
 		}
+		System.out.println("HERE");
 		for(int i = 0; i < allPoints.length; i++) {
 			if(allPoints[i].unclassified() && allPoints[i].isNoise() == false) {
 				if(isBorder(allPoints[i])) {
@@ -114,6 +114,8 @@ public class DBScan extends ClusteringAlgorithm {
 				}
 			}
 		}
+		System.out.print("DBScan with " + this.EPSILON + " epsilon and " + this.MINPOINTS + " min points: ");
+		//WilsonProject4Application.evaluateCluster(this, false);
 	}
 	private boolean isBorder(Point p) {
 		int neighbors = 0;

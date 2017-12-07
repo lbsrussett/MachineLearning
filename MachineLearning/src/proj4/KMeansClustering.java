@@ -22,7 +22,7 @@ public class KMeansClustering extends ClusteringAlgorithm{
 	}
 	
 	private void printEvaluation(int iteration){
-		System.out.print("K-Means on iteration " + iteration + " with " + this.k + " clusters strength: ");
+		//System.out.print("K-Means on iteration " + iteration + " with " + this.k + " clusters strength: ");
 		this.valid = WilsonProject4Application.evaluateCluster(this, this.inputs, false);
 	}
 	

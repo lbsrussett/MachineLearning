@@ -16,46 +16,53 @@ public class WilsonProject4Application {
 	public static final int numberOfTests = 100;
 	public static double maxStrength = 0;
 	public static int strongestClusterSize = 0;
+	public static int stongestminpoint = 0;
+	public static double strongestEpsilonValue = 0;
+	
+	public static double[] epsilonValues = {2,3,5};
+	public static int[] minpointValues = {1,3,5,10,30};
 	
 	public static void main(String[] args){
-		ClusteringAlgorithm kmc = new KMeansClustering();
 		double[][] inputs = loadInputs(fileName);//{{1},{2},{3},{5},{8},{9},{10}};//
 		final long startTime = System.currentTimeMillis();
 		for(int test = 0; test < numberOfTests; test++){
 			System.out.println("Test: "+(test+1));
-			runTests(kmc, inputs);
+			runTests(inputs);
 		}
 		final long endTime = System.currentTimeMillis();
 		System.out.println("Max Strength: " + maxStrength);
+		System.out.println("Strongest Min Point Value: " + stongestminpoint);
+		System.out.println("Strongest Epsilon Value: " + strongestEpsilonValue);
 		System.out.println("Max Strength happened with " + strongestClusterSize + " clusters");
 		System.out.println("Total execution time: " + (endTime - startTime)/1000.0 + " seconds" );
 	}
 	
-	public static double runTests(ClusteringAlgorithm clusterCreater, double[][] inputs){
+	public static double runTests(double[][] inputs){
 		double maxStrength = 0;
-		for(int k = 2; k <= maxClusterSize; k++){
+		for(int epsilonIndex = 0; epsilonIndex < epsilonValues.length; epsilonIndex++){
+			for(int minpointIndex = 0; minpointIndex < minpointValues.length; minpointIndex++){
 			//Run the cluster algorithm
-			KMeansClustering KMeans = new KMeansClustering();
-			KMeans.setNumberOfClusters(k);
-			KMeans.setInputs(inputs);
-			KMeans.updateClusters(inputs);
-			evaluateCluster(KMeans, inputs, true);
+				DBScan dbs = new DBScan(inputs,epsilonValues[epsilonIndex],minpointValues[minpointIndex]);
+				dbs.updateClusters(inputs);
+				evaluateCluster(dbs, true);
+			}
 		}
 		return maxStrength;
 	}
 	
-	public static boolean evaluateCluster(ClusteringAlgorithm clusterCreater, double[][] inputs, boolean finalTest){
+	public static boolean evaluateCluster(ClusteringAlgorithm clusterCreater, boolean finalTest){
 		boolean illegitimateAnswer = false;
 		int k = clusterCreater.returnClusters().size();
 		//Find the average distance between an input and its center
 		double sumDistancesSquared = 0;
 		for(Cluster cluster: clusterCreater.returnClusters()){
 			sumDistancesSquared+=cluster.getAverageDistanceToCenter();
+			//System.out.println(cluster.getAverageDistanceToCenter());
 		}
 		double averageDistanceToCenter = Math.sqrt(sumDistancesSquared)/k;
-		if(averageDistanceToCenter == 0){
-			illegitimateAnswer = true;
-		}
+		//if(averageDistanceToCenter <= 0){
+		//	illegitimateAnswer = true;
+		//}
 		
 		//Find average distance between centers
 		int combinations = 0;
@@ -64,16 +71,18 @@ public class WilsonProject4Application {
 		for(int center1 = 0; center1<(k-1);center1++){
 			for(int center2 = center1+1; center2<k;center2++){
 				combinations++;
-				Point c1 = clusterCreater.returnClusters().get(center1).getCenter();
-				Point c2 = clusterCreater.returnClusters().get(center2).getCenter();
-				if(Double.isNaN(c1.getValues()[0]) || Double.isNaN(c2.getValues()[0])){
-					illegitimateAnswer = true;
+				double[] c1 = clusterCreater.returnClusters().get(center1).getAveragePosition();
+				double[] c2 = clusterCreater.returnClusters().get(center2).getAveragePosition();
+				if(Double.isNaN(c1[0]) || Double.isNaN(c2[0]) || Double.isInfinite(c1[0]) || Double.isInfinite(c2[0])){
+					//illegitimateAnswer = true;
+				}else{
+					sumOfDistancesSquared += Cluster.getDistance(c1, c2);
 				}
-				sumOfDistancesSquared += Cluster.getDistance(c1.getValues(), c2.getValues());
 			}
 		}
 		double averageDistanceBetweenCenters = Math.sqrt(sumOfDistancesSquared)/combinations;
 		if(!Double.isNaN(averageDistanceBetweenCenters) && !Double.isNaN(averageDistanceToCenter)){
+			
 			System.out.println("Distance Between Ceters: " + averageDistanceBetweenCenters + " \t Distance To Centers: " + averageDistanceToCenter);
 			double strength = averageDistanceBetweenCenters/averageDistanceToCenter;
 			if(illegitimateAnswer){
@@ -81,6 +90,9 @@ public class WilsonProject4Application {
 			}
 			if(strength>maxStrength && finalTest){
 				maxStrength = strength;
+				DBScan dbs = (DBScan) clusterCreater;
+				stongestminpoint = dbs.MINPOINTS;
+				strongestEpsilonValue = dbs.EPSILON;
 				strongestClusterSize = clusterCreater.returnClusters().size();
 			}
 			return true;
