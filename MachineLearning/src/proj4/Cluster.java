@@ -1,3 +1,5 @@
+package proj4;
+
 import java.util.ArrayList;
 
 
@@ -91,7 +93,13 @@ public class Cluster {
 		return Math.sqrt(sumDistance);
 	}
 	
-	
+	public void createCenter() {
+		Point center = null;
+		double[] values = getAveragePosition();
+		center = new Point(values);
+		center.setCorePoint();
+		addPoint(center);
+	}
     
 	public void addPoint(Point p) {
 		points.add(p);

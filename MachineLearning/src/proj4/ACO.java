@@ -38,7 +38,6 @@ public class ACO extends ClusteringAlgorithm {
 			ants[i].antSearch(pheromones);
 		}
 	}
-	@Override
 	public void updateClusters() {
 		while(termination < ITERATIONS) {
 			updatePheromones();
@@ -162,5 +161,11 @@ public class ACO extends ClusteringAlgorithm {
 				pheromones[i][j] = 0.01;
 			}
 		}
+	}
+
+	@Override
+	public void updateClusters(double[][] inputs) {
+		// TODO Auto-generated method stub
+		
 	}
 }
