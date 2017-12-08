@@ -31,9 +31,9 @@ public class Ant {
 		createSolution();
 	}
 	private void createSolution() {
+		Random rand = new Random();
 		for(int i = 0; i < solution.length; i++) {
 			double highest = 0;
-			Random rand = new Random();
 			double prob = rand.nextDouble();
 			if(prob < Q_0) {
 				for(int j = 0; j < clustNum; j++) {

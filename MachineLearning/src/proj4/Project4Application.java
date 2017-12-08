@@ -13,13 +13,13 @@ import java.util.Scanner;
 /*Wholesale: dimensions=6, inputVectors=440, possibleClassifications=undefined, filename="Wholesale_customers_data.csv"*/
 
 public class Project4Application {
-	private static int dimensions = 8; //How many inputs are passed in
+	private static int dimensions = 6; //How many inputs are passed in
 	private static int inputVectors = 210; //How many arrays of inputs are tested
 	private static int possibleClassifications = 3; //If the problem is multiClass, the number of classifcations
-	private static String filename = "HTRU_2.csv";
+	private static String filename = "Wholesale_customers_data.csv";
 	private static double[][] inputs = null;
-	public static double EPSILON = 40;
-	public static  int MINPOINTS = 20;
+	public static double EPSILON = 3;
+	public static  int MINPOINTS = 5;
 	
 	public static void main(String[] args) {
 		inputs = loadInputs(); 

@@ -6,7 +6,6 @@ import java.util.Random;
 public class ACO extends ClusteringAlgorithm {
 	private Point[] allPoints;
 	private Ant[] ants;
-	//private Point[][] grid;
 	private double[][] pheromones;
 	private ArrayList<Cluster> clusters = new ArrayList<Cluster>();
 	private int clustNum, iterations = 0, termination = 0;
@@ -84,14 +83,11 @@ public class ACO extends ClusteringAlgorithm {
 		for(int i = 0; i < c.size(); i++) {
 			double fitness = c.get(i).getAverageDistanceToCenter();
 			for(int j = 0; j < pheromones.length; j++) {
-				for(int k = 0; k < clustNum; k++) {
-					if(currentSol[j] == i+1) {
-						pheromones[j][k] += Q/fitness;
-					}
+				if(currentSol[j] == i+1) {
+					pheromones[j][i] += Q/fitness;
 				}
 			}
 		}
-		//normalize();
 	}
 	private ArrayList<Cluster> createClusters(int[] sol) {
 		ArrayList<Cluster> soln = new ArrayList<Cluster>();
@@ -135,7 +131,22 @@ public class ACO extends ClusteringAlgorithm {
 		}
 		return soln;
 	}
-	private void normalize() {
+	
+	private void initPheromones() {
+		pheromones = new double[allPoints.length][clustNum];
+		for(int i = 0; i < allPoints.length; i++) {
+			for(int j = 0; j < clustNum; j++) {
+				pheromones[i][j] = 0.01;
+			}
+		}
+	}
+
+	@Override
+	public void updateClusters(double[][] inputs) {
+		// TODO Auto-generated method stub
+		
+	}
+	/*private void normalize() {
 		double min = Double.MAX_VALUE;
 		double max = Double.MIN_VALUE;
 		for(int i = 0; i < pheromones.length; i++) {
@@ -153,19 +164,5 @@ public class ACO extends ClusteringAlgorithm {
 				pheromones[i][j] = (pheromones[i][j]-min)/(max-min);
 			}
 		}
-	}
-	private void initPheromones() {
-		pheromones = new double[allPoints.length][clustNum];
-		for(int i = 0; i < allPoints.length; i++) {
-			for(int j = 0; j < clustNum; j++) {
-				pheromones[i][j] = 0.01;
-			}
-		}
-	}
-
-	@Override
-	public void updateClusters(double[][] inputs) {
-		// TODO Auto-generated method stub
-		
-	}
+	}*/
 }
