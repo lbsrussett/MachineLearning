@@ -5,22 +5,25 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class WilsonProject4Application {
-	public static final String fileName = "seeds.csv";
-	//frogs 22
-	//seeds 7
-	//wholesale 8
+	public static final String fileName = "network.csv";
+	//frogs 22 working
+	//seeds 7 working
+	//customers 6
 	//htru 8
 	//network 4
-	public static final int dimensions = 7;
+	public static final int dimensions = 4;
 	public static final int maxClusterSize = 10;
 	public static final int numberOfTests = 100;
 	public static double maxStrength = 0;
 	public static int strongestClusterSize = 0;
-	public static int stongestminpoint = 0;
-	public static double strongestEpsilonValue = 0;
+	public static int stongestAntSize = 0;
+	public static double strongestQValue = 0;
 	
-	public static double[] epsilonValues = {2,3,5};
-	public static int[] minpointValues = {1,3,5,10,30};
+	//public static double[] epsilonValues = {1,3,5};
+	//public static int[] minpointValues = {3,5,10};
+	
+	public static int[] antValues = {5, 10, 20};
+	public static double[] qValues = {0.25, 0.5, 0.75};
 	
 	public static void main(String[] args){
 		double[][] inputs = loadInputs(fileName);//{{1},{2},{3},{5},{8},{9},{10}};//
@@ -31,20 +34,37 @@ public class WilsonProject4Application {
 		}
 		final long endTime = System.currentTimeMillis();
 		System.out.println("Max Strength: " + maxStrength);
-		System.out.println("Strongest Min Point Value: " + stongestminpoint);
-		System.out.println("Strongest Epsilon Value: " + strongestEpsilonValue);
-		System.out.println("Max Strength happened with " + strongestClusterSize + " clusters");
+		//System.out.println("Strongest Min Point Value: " + stongestminpoint);
+		//System.out.println("Strongest Epsilon Value: " + strongestEpsilonValue);
+		System.out.println("Strongest Number of Ants: " + stongestAntSize);
+		System.out.println("Strongest Q Value: " + strongestQValue);
+		//System.out.println("Max Strength happened with " + strongestClusterSize + " clusters");
 		System.out.println("Total execution time: " + (endTime - startTime)/1000.0 + " seconds" );
 	}
 	
 	public static double runTests(double[][] inputs){
 		double maxStrength = 0;
-		for(int epsilonIndex = 0; epsilonIndex < epsilonValues.length; epsilonIndex++){
+		/*for(int k = 2; k <= 10; k++){
+			KMeansClustering kmc = new KMeansClustering();
+			kmc.setInputs(inputs);
+			kmc.setNumberOfClusters(k);
+			kmc.updateClusters(inputs);
+			evaluateCluster(kmc, true);
+		}*/
+		/*for(int epsilonIndex = 0; epsilonIndex < epsilonValues.length; epsilonIndex++){
 			for(int minpointIndex = 0; minpointIndex < minpointValues.length; minpointIndex++){
 			//Run the cluster algorithm
 				DBScan dbs = new DBScan(inputs,epsilonValues[epsilonIndex],minpointValues[minpointIndex]);
 				dbs.updateClusters(inputs);
 				evaluateCluster(dbs, true);
+			}
+		}*/
+		
+		for(int antIndex = 0; antIndex < antValues.length; antIndex++){
+			for(int qIndex = 0; qIndex < qValues.length; qIndex++){
+			//Run the cluster algorithm
+				ACO aco = new ACO(inputs,2,antValues[antIndex],qValues[qIndex]);
+				aco.updateClusters(inputs);
 			}
 		}
 		return maxStrength;
@@ -57,7 +77,6 @@ public class WilsonProject4Application {
 		double sumDistancesSquared = 0;
 		for(Cluster cluster: clusterCreater.returnClusters()){
 			sumDistancesSquared+=cluster.getAverageDistanceToCenter();
-			//System.out.println(cluster.getAverageDistanceToCenter());
 		}
 		double averageDistanceToCenter = Math.sqrt(sumDistancesSquared)/k;
 		//if(averageDistanceToCenter <= 0){
@@ -83,16 +102,16 @@ public class WilsonProject4Application {
 		double averageDistanceBetweenCenters = Math.sqrt(sumOfDistancesSquared)/combinations;
 		if(!Double.isNaN(averageDistanceBetweenCenters) && !Double.isNaN(averageDistanceToCenter)){
 			
-			System.out.println("Distance Between Ceters: " + averageDistanceBetweenCenters + " \t Distance To Centers: " + averageDistanceToCenter);
+			System.out.println("Distance Between Centers: " + averageDistanceBetweenCenters + " \t Distance To Centers: " + averageDistanceToCenter);
 			double strength = averageDistanceBetweenCenters/averageDistanceToCenter;
 			if(illegitimateAnswer){
 				strength = 0;
 			}
 			if(strength>maxStrength && finalTest){
 				maxStrength = strength;
-				DBScan dbs = (DBScan) clusterCreater;
-				stongestminpoint = dbs.MINPOINTS;
-				strongestEpsilonValue = dbs.EPSILON;
+				ACO aco = (ACO) clusterCreater;
+				stongestAntSize = aco.NUM_ANTS;
+				strongestQValue = aco.Q;
 				strongestClusterSize = clusterCreater.returnClusters().size();
 			}
 			return true;

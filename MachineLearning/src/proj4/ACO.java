@@ -1,5 +1,3 @@
-package proj4;
-
 import java.util.*;
 import java.util.Random;
 //double check the pheromone calculation - all values are ending up the same.
@@ -12,13 +10,15 @@ public class ACO extends ClusteringAlgorithm {
 	private double[] prob;
 	private double currentFitness = Double.MAX_VALUE;
 	private int[] currentSol;
-	private final int NUM_ANTS = 20;
-	private final double Q = 0.80;
+	public int NUM_ANTS = 20;
+	public double Q = 0.80;
 	private final int ITERATIONS = 10;
 	
 	
-	public ACO(double[][] inputs, int clustNum) {
+	public ACO(double[][] inputs, int clustNum, int antNum, double q) {
 		this.clustNum = clustNum;
+		this.NUM_ANTS = antNum;
+		this.Q = q;
 		allPoints = new Point[inputs.length];
 		for(int i = 0; i < inputs.length; i++) {
 			this.allPoints[i] = new Point(inputs[i]);
@@ -37,15 +37,19 @@ public class ACO extends ClusteringAlgorithm {
 			ants[i].antSearch(pheromones);
 		}
 	}
-	public void updateClusters() {
+	public void updateClusters(double[][] inputs) {
+		int counter = 1;
 		while(termination < ITERATIONS) {
 			updatePheromones();
 			startAnts();
+			System.out.print("ACO on iteration " + counter++ + " with " + this.Q + " Q value and " + this.NUM_ANTS + " ants: ");
+			WilsonProject4Application.evaluateCluster(this, false);
 		}
+		WilsonProject4Application.evaluateCluster(this, true);
 	}
 	@Override
 	public ArrayList<Cluster> returnClusters() {
-		System.out.println(iterations);
+		//System.out.println(iterations);
 		return clusters;
 	}
 	public ArrayList<Cluster> findBestSolution() {
@@ -67,8 +71,8 @@ public class ACO extends ClusteringAlgorithm {
 				solutions = c;
 			}
 		}
-		System.out.println(fitness);
-		System.out.println(currentFitness/allPoints.length);
+		//System.out.println(fitness);
+		//System.out.println(currentFitness/allPoints.length);
 		
 		if(currentFitness > fitness) {
 			currentFitness = fitness;
@@ -129,6 +133,7 @@ public class ACO extends ClusteringAlgorithm {
 			soln.add(c2);
 			soln.add(c3);
 		}
+		this.clusters = soln;
 		return soln;
 	}
 	
@@ -139,12 +144,6 @@ public class ACO extends ClusteringAlgorithm {
 				pheromones[i][j] = 0.01;
 			}
 		}
-	}
-
-	@Override
-	public void updateClusters(double[][] inputs) {
-		// TODO Auto-generated method stub
-		
 	}
 	/*private void normalize() {
 		double min = Double.MAX_VALUE;

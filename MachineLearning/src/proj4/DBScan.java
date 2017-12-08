@@ -1,12 +1,10 @@
-package proj4;
-
 import java.util.ArrayList;
 
 public class DBScan extends ClusteringAlgorithm {
 	private Point[] allPoints = null;
 	private ArrayList<Cluster> clusters = new ArrayList<Cluster>();
-	private double EPSILON;
-	private int MINPOINTS;
+	public double EPSILON = 1.5;
+	public  int MINPOINTS = 5;
 	ArrayList<Point> cp = new ArrayList<Point>();
 	
 	public DBScan(double[][] inputs, double epsilon, int minpoints) {
@@ -37,7 +35,7 @@ public class DBScan extends ClusteringAlgorithm {
 			}
 		}
 		initClusters();
-		System.out.println(cores);
+		//System.out.println(cores);
 	}
 	private void initClusters() {
 		for(Point a : allPoints) {
@@ -51,6 +49,7 @@ public class DBScan extends ClusteringAlgorithm {
 				clusters.add(clust);
 				clust.addPoint(c);
 				c.updateCluster(clust);
+				//System.out.println("HERE");
 				for(int i = 0; i < cp.size(); i++) {
 					if(cp.get(i).getCluster() == null) {
 						if(!c.equals(cp.get(i)) && withinEpsilon(c, cp.get(i))) {
@@ -64,13 +63,11 @@ public class DBScan extends ClusteringAlgorithm {
 		}
 	}
 	public void updateClusters(double input[][]) {
-		System.out.println("here");
 		for(int i = 0; i < allPoints.length; i++) {
 			if(allPoints[i].isCorePoint()) {
 				calcDistance(allPoints[i]);
 			}
 		}
-		System.out.println("HERE");
 		for(int i = 0; i < allPoints.length; i++) {
 			if(allPoints[i].unclassified() && allPoints[i].isNoise() == false) {
 				if(isBorder(allPoints[i])) {
@@ -117,8 +114,7 @@ public class DBScan extends ClusteringAlgorithm {
 				}
 			}
 		}
-		System.out.print("DBScan with " + this.EPSILON + " epsilon and " + this.MINPOINTS + " min points: ");
-		//WilsonProject4Application.evaluateCluster(this, false);
+		System.out.print("DBScan with " + this.EPSILON + " epsilon and " + this.MINPOINTS + " min points: " + this.clusters.size() + " Clusters ");
 	}
 	private boolean isBorder(Point p) {
 		int neighbors = 0;
@@ -131,7 +127,7 @@ public class DBScan extends ClusteringAlgorithm {
 					if(p.getCluster() == null) {
 						Cluster c = new Cluster(MINPOINTS);
 						c.addPoint(p);
-						p.updateCluster(c);
+						p.updateCluster(c);//allPoints[i].getCluster());
 					}
 					allPoints[i].updateCluster(p.getCluster());
 					Cluster c = p.getCluster();
@@ -142,11 +138,10 @@ public class DBScan extends ClusteringAlgorithm {
 		if(neighbors <= MINPOINTS && neighbors > 0) {
 			return true;
 		}
-		else {
+		else{
 			p.updateNoise(true);
 			return false;
 		}
-			
 	}
 	private void calcDistance(Point p) {
 			for(int i = 0; i < allPoints.length; i++) {

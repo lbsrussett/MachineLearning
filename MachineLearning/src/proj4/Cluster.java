@@ -1,5 +1,3 @@
-package proj4;
-
 import java.util.ArrayList;
 
 
@@ -94,9 +92,8 @@ public class Cluster {
 	}
 	
 	public void createCenter() {
-		Point center = null;
 		double[] values = getAveragePosition();
-		center = new Point(values);
+		Point center = new Point(values);
 		center.setCorePoint();
 		addPoint(center);
 	}

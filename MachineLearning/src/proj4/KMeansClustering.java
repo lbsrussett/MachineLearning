@@ -2,7 +2,6 @@ import java.util.ArrayList;
 import java.util.Random;
  
 public class KMeansClustering extends ClusteringAlgorithm{
-	private double[][] centers;
 	private int k;
 	private ArrayList<Cluster> clusters = new ArrayList<Cluster>();
 	private ArrayList<Point> points = new ArrayList<Point>();
@@ -22,8 +21,8 @@ public class KMeansClustering extends ClusteringAlgorithm{
 	}
 	
 	private void printEvaluation(int iteration){
-		//System.out.print("K-Means on iteration " + iteration + " with " + this.k + " clusters strength: ");
-		this.valid = WilsonProject4Application.evaluateCluster(this, this.inputs, false);
+		System.out.print("K-Means on iteration " + iteration + " with " + this.k + " clusters strength: ");
+		this.valid = WilsonProject4Application.evaluateCluster(this, false);
 	}
 	
 	public void updateClusters(double inputs[][]){
